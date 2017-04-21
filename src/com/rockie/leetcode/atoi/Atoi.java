@@ -5,32 +5,32 @@ package com.rockie.leetcode.atoi;
  */
 public class Atoi {
     public int myAtoi(String str) {
-        //deal with blanks
-        str = str.trim();
-        if(str.indexOf('.') >= 0) {
-            str = str.substring(0,str.indexOf('.'));
+        int index = 0, sign = 1, total = 0;
+        //1. Empty string
+        if(str.length() == 0) return 0;
+
+        //2. Remove Spaces
+        while(str.charAt(index) == ' ' && index < str.length())
+            index ++;
+
+        //3. Handle signs
+        if(str.charAt(index) == '+' || str.charAt(index) == '-'){
+            sign = str.charAt(index) == '+' ? 1 : -1;
+            index ++;
         }
 
-        int sign = 1;
-        if(str.startsWith("-")) {
-            sign = -1;
-            str = str.substring(1);
-        }
-        if(str.startsWith("+")) {
-            str = str.substring(1);
-        }
+        //4. Convert number and avoid overflow
+        while(index < str.length()){
+            int digit = str.charAt(index) - '0';
+            if(digit < 0 || digit > 9) break;
 
-        int value = 0;
-        char[] chars = str.toCharArray();
-        for(int i = 0;i<chars.length;i++) {
-            char c = chars[i];
-            if(c >= '0' && c<= '9') {
-                value = value *10 + c - '0';
-            } else {
-                return value * sign;
-            }
-        }
+            //check if total will be overflow after 10 times and add digit
+            if(Integer.MAX_VALUE/10 < total || Integer.MAX_VALUE/10 == total && Integer.MAX_VALUE %10 < digit)
+                return sign == 1 ? Integer.MAX_VALUE : Integer.MIN_VALUE;
 
-        return value * sign;
+            total = 10 * total + digit;
+            index ++;
+        }
+        return total * sign;
     }
 }
